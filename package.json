@@ -1,0 +1,16 @@
+{
+  "name": "rural_life_sim",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "scripts": "tsc -w",
+    "styles": "sass --watch dev/scss:dist/css --style compressed"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "sass": "^1.69.5",
+    "typescript": "^5.1.6"
+  }
+}
