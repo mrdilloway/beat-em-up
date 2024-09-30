@@ -1,11 +1,18 @@
 export class KeyboardManager {
+	#keyDowns = new Set();
+
 	/****/
 	handleKeyDown(code: string): void {
-		console.log('handleKeyDown', code);
+		this.#keyDowns.add(code);
 	}
 
 	/****/
 	handleKeyUp(code: string): void {
-		console.log('handleKeyUp', code);
+		this.#keyDowns.delete(code);
+	}
+
+	/****/
+	isDown(code: string): boolean {
+		return this.#keyDowns.has(code);
 	}
 }

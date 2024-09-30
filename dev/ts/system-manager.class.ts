@@ -10,7 +10,7 @@ export class SystemManager {
 	}
 
 	/****/
-	update(delta: number): void {
-		this.#systems.forEach(o => o.update(delta));
+	update(deltaTime: number): void {
+		this.#systems.forEach(o => o.update(deltaTime));
 	}
 }

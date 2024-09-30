@@ -1,11 +1,20 @@
 import { EntityManager } from './entity-manager.class.js';
 import { KeyboardManager } from './keyboard-manager.class.js';
 import { SystemManager } from './system-manager.class.js';
+import { Renderer } from './renderer.class.js';
+import { Stage } from './stage.class.js';
+
+interface ConstructorParamsInterface {
+	targetFps?: number;
+	canvasWidth?: number;
+	canvasHeight?: number;
+};
 
 export class Engine {
 	readonly #entityManager: EntityManager;
 	readonly #keyboardManager: KeyboardManager;
 	readonly #systemManager: SystemManager;
+	readonly #renderer: Renderer;
 
 	#rafId: number = 0;
 	#previousTicks: number = 0;
@@ -14,14 +23,25 @@ export class Engine {
 	#frameDelay: number = 1000;
 	#frameDelta: number = 0;
 
+	#currentStage?: Stage;
+
 	/****/
-	constructor() {
+	constructor(params: ConstructorParamsInterface = {}) {
+		//
+		this.targetFps = params.targetFps ?? 60;
+
+		//
 		this.#entityManager = new EntityManager();
 		this.#keyboardManager = new KeyboardManager();
 		this.#systemManager = new SystemManager();
 
-		this.targetFps = 1;
+		//
+		this.#renderer = new Renderer(
+			this,
+			(({ canvasWidth, canvasHeight }) => ({ canvasWidth, canvasHeight }))(params)
+		);
 
+		//
 		window.addEventListener('keydown', this.#handleKeyDown.bind(this));
 		window.addEventListener('keyup', this.#handleKeyUp.bind(this));
 	}
@@ -56,8 +76,13 @@ export class Engine {
 	}
 
 	/****/
+	resize(width: number, height: number): void {
+		this.#renderer.resize(width, height);
+	}
+
+	/****/
 	#loop(currentTicks: number): void {
-		// Increase frame delta
+		// Increase frame deltaTime
 		this.#frameDelta += currentTicks - this.#previousTicks;
 		this.#previousTicks = currentTicks;
 
@@ -65,10 +90,8 @@ export class Engine {
 		while (this.#frameDelta >= this.#frameDelay) {
 			this.#frameDelta -= this.#frameDelay;
 			this.#update(this.#frameDelay);
+			this.#render();
 		}
-
-		//
-		this.#render();
 
 		if (0 < this.#rafId) {
 			this.#rafId = window.requestAnimationFrame(this.#loop.bind(this));
@@ -76,13 +99,13 @@ export class Engine {
 	}
 
 	/****/
-	#update(delta: number): void {
-		this.#systemManager.update(delta);
+	#update(deltaTime: number): void {
+		this.#systemManager.update(deltaTime);
 	}
 
 	/****/
 	#render(): void {
-		// console.log('render');
+		this.#renderer.render();
 	}
 
 	/****/
@@ -123,5 +146,20 @@ export class Engine {
 	/****/
 	get keyboard(): KeyboardManager {
 		return this.#keyboardManager;
+	}
+
+	/****/
+	get surface(): HTMLCanvasElement {
+		return this.#renderer.surface;
+	}
+
+	/****/
+	get currentStage(): Stage|undefined {
+		return this.#currentStage;
+	}
+
+	/****/
+	set currentStage(stage: Stage) {
+		this.#currentStage = stage;
 	}
 }

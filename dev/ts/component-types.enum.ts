@@ -1,4 +1,7 @@
 export enum ComponentTypes {
-	position,
+	appearance,
+	cameraConfig,
 	keyboard,
+	movement,
+	position,
 }

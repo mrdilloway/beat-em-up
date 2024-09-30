@@ -20,14 +20,30 @@ export class EntityManager {
 	}
 
 	/****/
+	getComponent(entityId: string, type: ComponentTypes): null|AbstractComponent {
+		return this.#entities.get(entityId)?.get(type) ?? null;
+	}
+
+	/****/
 	hasComponent(entityId: string, type: ComponentTypes): boolean {
 		if (!this.#entities.has(entityId)) return false;
 		return this.#entities.get(entityId)!.has(type);
 	}
 
 	/****/
+	hasComponents(entityId: string, types: ComponentTypes[]): boolean {
+		const result = types.find(type => !this.hasComponent(entityId, type));
+		return (undefined === result);
+	}
+
+	/****/
 	filter(callback: (arg: string) => boolean): string[] {
 		return [...this.#entities.keys()].filter(callback);
+	}
+
+	/****/
+	find(callback: (arg: string) => boolean): string|undefined {
+		return [...this.#entities.keys()].find(callback);
 	}
 
 	/****/

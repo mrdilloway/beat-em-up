@@ -16,5 +16,8 @@ html {
 }
 
 canvas {
-    border: 1px solid #fff;
+	display: inline-block;
+	height: 100dvh;
+	vertical-align: top;
+	width: 100%;
 }
